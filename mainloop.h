@@ -49,6 +49,7 @@ private:
     {
         const int CHIP_SCREEN_WIDTH = 64;
         const int CHIP_SCREEN_HEIGHT = 32;
+
         SDL_SetRenderDrawColor(renderer, 0xCA, 0xDC, 0x9F, 255);
         SDL_RenderClear(renderer);
         for(int y = 0; y < CHIP_SCREEN_HEIGHT; y++)
@@ -58,8 +59,8 @@ private:
                 if(chipeight.getPixel(x, y) == 1)
                 {
                     SDL_Rect r;
-                    int width_coef = (windowWidth-CHIP_SCREEN_WIDTH)/CHIP_SCREEN_WIDTH;
-                    int height_coef = (windowHeight-CHIP_SCREEN_HEIGHT)/CHIP_SCREEN_HEIGHT;
+                    int width_coef = (windowWidth-CHIP_SCREEN_WIDTH)/CHIP_SCREEN_WIDTH+1;
+                    int height_coef = (windowHeight-CHIP_SCREEN_HEIGHT)/CHIP_SCREEN_HEIGHT+1;
                     r.x = x*width_coef;
                     r.y = y*height_coef;
                     r.w = width_coef;
@@ -68,7 +69,6 @@ private:
                     SDL_RenderFillRect( renderer, &r );
                 }
             }
-            std::cout << "\n";
         }
         chipeight.drawFlag = false;
         SDL_RenderPresent(renderer);
@@ -85,19 +85,57 @@ private:
             {
                 switch ( event.key.keysym.sym )
                 {
-                //                case SDLK_RIGHT:
-                //                    ++playerPos.x;
-                //                    break;
-                //                case SDLK_LEFT:
-                //                    --playerPos.x;
-                //                    break;
-                //                    // Remeber 0,0 in SDL is left-top. So when the user pressus down, the y need to increase
-                //                case SDLK_DOWN:
-                //                    ++playerPos.y;
-                //                    break;
-                //                case SDLK_UP:
-                //                    --playerPos.y;
-                //                    break;
+                case SDLK_1:
+                    chipeight.pressKey(0x1);
+                    break;
+                case SDLK_2:
+                    chipeight.pressKey(0x2);
+                    break;
+                case SDLK_3:
+                    chipeight.pressKey(0x3);
+                    break;
+                case SDLK_4:
+                    chipeight.pressKey(0xC);
+                    break;
+
+                case SDLK_q:
+                    chipeight.pressKey(0x4);
+                    break;
+                case SDLK_w:
+                    chipeight.pressKey(0x5);
+                    break;
+                case SDLK_e:
+                    chipeight.pressKey(0x6);
+                    break;
+                case SDLK_r:
+                    chipeight.pressKey(0xD);
+                    break;
+
+                case SDLK_a:
+                    chipeight.pressKey(0x7);
+                    break;
+                case SDLK_s:
+                    chipeight.pressKey(0x8);
+                    break;
+                case SDLK_d:
+                    chipeight.pressKey(0x9);
+                    break;
+                case SDLK_f:
+                    chipeight.pressKey(0xE);
+                    break;
+
+                case SDLK_z:
+                    chipeight.pressKey(0xA);
+                    break;
+                case SDLK_x:
+                    chipeight.pressKey(0x0);
+                    break;
+                case SDLK_c:
+                    chipeight.pressKey(0xB);
+                    break;
+                case SDLK_v:
+                    chipeight.pressKey(0xF);
+                    break;
                 default :
                     break;
                 }
@@ -107,6 +145,8 @@ private:
                 case SDL_WINDOWEVENT_RESIZED:
                     windowWidth = event.window.data1;
                     windowHeight = event.window.data2;
+                    render();
+                    break;
                 }
             }
         }
@@ -117,7 +157,7 @@ public:
     {
         initSdl();
         chipeight.init();
-        chipeight.load("./spaceInvaders.ch8");
+        chipeight.load("./my.ch8");
         running = false;
     }
     ~MainLoop()
@@ -129,14 +169,35 @@ public:
 
     void run()
     {
+        double f_deltaTime = 0;
+        Uint32 currentTime = SDL_GetTicks();
+        Uint32 lastTime = 0;
+        Uint32 time = 0; // Используется для ограничения FPS
+
+
+
+
         running = true;
         while(running)
         {
+            if (currentTime > lastTime)
+                lastTime = currentTime;
+            currentTime = SDL_GetTicks();
+            f_deltaTime = (double)((currentTime - lastTime)/1000.0f);
+            time = SDL_GetTicks();
+
             if(chipeight.drawFlag)
                 render();
             processEvents();
-            chipeight.cycle();
-            SDL_Delay(2);
+            for(int i = 0; i < 1; i++)
+                chipeight.cycle();
+
+            double n_FPScap = 60.0;
+
+            if(1000.0/n_FPScap > SDL_GetTicks()-time)
+            {
+                SDL_Delay(1000.0/n_FPScap-(double)(SDL_GetTicks()-time));
+            }
         }
     }
 };
