@@ -158,8 +158,11 @@ void ChipEight::substractRegisters(uint16_t opcode)
 
 void ChipEight::shiftRightRegister(uint16_t opcode)
 {
-    registers[0xF] = registers[(opcode & 0x0F00) >> 8] & 0x1;
-    registers[(opcode & 0x0F00) >> 8] >>= 1;
+    int regToShift = opcode & 0x0F00;
+    registers[0xF] = registers[regToShift] & 0x1;
+    registers[regToShift] >>= 1;
+//    registers[0xF] = registers[(opcode & 0x0F00) >> 8] & 0x1;
+//    registers[(opcode & 0x0F00) >> 8] >>= 1;
     /*int first = (opcode & 0x0F00) >> 8;
         int second = (opcode & 0x00F0) >> 4;
         registers[0xF] = registers[second] & 0x0001;
@@ -180,8 +183,12 @@ void ChipEight::VySubstractVx(uint16_t opcode)
 
 void ChipEight::shiftLeftRegister(uint16_t opcode)
 {
-    registers[0xF] = registers[(opcode & 0x0F00) >> 8] >> 7;
-    registers[(opcode & 0x0F00) >> 8] <<= 1;
+    int regToShift = opcode & 0x0F00;
+    registers[0xF] = registers[regToShift] >> 7;
+    registers[regToShift] <<= 1;
+//    registers[0xF] = registers[(opcode & 0x0F00) >> 8] >> 7;
+//    registers[(opcode & 0x0F00) >> 8] <<= 1;
+
     /*int first = (opcode & 0x0F00) >> 8;
         int second = (opcode & 0x00F0) >> 4;
         registers[0xF] = registers[second] & 0x8000;
@@ -239,7 +246,7 @@ void ChipEight::skipIfKeyPressed(uint16_t opcode)
 {
     int reg = (opcode & 0x0F00) >> 8;
 
-    if(registers[reg] < 0x10 && keys[registers[reg]] == 1)
+    if(registers[reg] < 0xF && keys[registers[reg]] == 1)
         programCounter += 2;
     programCounter += 2;
 }
@@ -248,7 +255,7 @@ void ChipEight::skipIfKeyNotPressed(uint16_t opcode)
 {
     int reg = (opcode & 0x0F00) >> 8;
 
-    if(registers[reg] < 0x10 && keys[registers[reg]] != 1)
+    if(registers[reg] <= 0xF && keys[registers[reg]] != 1)
         programCounter += 2;
     programCounter += 2;
 }
@@ -294,10 +301,10 @@ void ChipEight::addToI(uint16_t opcode)
 {
     int reg = (opcode & 0x0F00) >> 8;
     // If overflow.
-    if(registerI + registers[reg] < registerI)
-        registers[0xf] = 1;
-    else
-        registers[0xf] = 0;
+//    if(registerI + registers[reg] < registerI)
+//        registers[0xf] = 1;
+//    else
+//        registers[0xf] = 0;
     registerI += registers[reg];
     programCounter += 2;
 }
@@ -320,10 +327,10 @@ void ChipEight::storeRegister(uint16_t opcode)
 
 void ChipEight::registerDump(uint16_t opcode)
 {
-    int reg = (opcode & 0x0F00) >> 8;
-    for(int i = 0; i <= reg; i++)
+    int endReg = (opcode & 0x0F00) >> 8;
+    for(int i = 0; i <= endReg; i++)
         memory[registerI + i] = registers[i];
-    registerI += reg + 1;
+//    registerI += reg + 1;
     programCounter += 2;
 }
 
@@ -460,7 +467,7 @@ void ChipEight::init()
         i = 0;
     for(uint8_t& i: displayBuffer)
         i = 0;
-    for(uint16_t& i: registers)
+    for(uint8_t& i: registers)
         i = 0;
     for(uint8_t& i: keys)
         i = 0;
