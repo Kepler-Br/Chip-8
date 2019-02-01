@@ -23,11 +23,12 @@ void ChipEight::clearScreen()
     for(uint8_t& i: displayBuffer)
         i = 0;
     programCounter+=2;
-    drawFlag = true;
 }
 
 void ChipEight::returnFromSubroutine()
 {
+    if(stackPointer == 0)
+        throw std::runtime_error("Cannot return from subroutine: stackpointer is 0.");
     stackPointer--;
     programCounter = jumpStack[stackPointer];
     programCounter+=2;
@@ -42,6 +43,8 @@ void ChipEight::gotoAdress(uint16_t opcode)
 
 void ChipEight::gotoSubroutine(uint16_t opcode)
 {
+    if(stackPointer == 16)
+        throw std::runtime_error("Cannot go to subroutine: maximum 16 subroutines.");
     jumpStack[stackPointer] = programCounter;
     stackPointer++;
     programCounter = opcode & 0x0FFF;
@@ -290,7 +293,8 @@ void ChipEight::setSoundTimer(uint16_t opcode)
 void ChipEight::addToI(uint16_t opcode)
 {
     int reg = (opcode & 0x0F00) >> 8;
-    if(registerI + registers[reg] > 0xFFF)
+    // If overflow.
+    if(registerI + registers[reg] < registerI)
         registers[0xf] = 1;
     else
         registers[0xf] = 0;
@@ -325,10 +329,10 @@ void ChipEight::registerDump(uint16_t opcode)
 
 void ChipEight::loadRegister(uint16_t opcode)
 {
-    int reg = (opcode & 0x0F00) >> 8;
-    for(int i = 0; i <= reg; i++)
-        registers[i] = memory[registerI + 1];
-    registerI += reg + 1;
+    int endReg = (opcode & 0x0F00) >> 8;
+    for(int i = 0; i <= endReg; i++)
+        registers[i] = memory[registerI + i];
+//    registerI += endReg + 1;
     programCounter += 2;
 }
 

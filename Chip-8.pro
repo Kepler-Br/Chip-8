@@ -3,11 +3,9 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += *.cpp \
-    mainloop.cpp
+SOURCES += *.cpp
 
-HEADERS += *.h \ 
-    mainloop.h
+HEADERS += *.h
 
 LIBS += -lSDL2
 

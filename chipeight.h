@@ -27,7 +27,6 @@ class ChipEight
     uint16_t stackPointer = 0;
 
 
-
     uint16_t fetchOpcode();
     void processTimers();
     void clearScreen();
