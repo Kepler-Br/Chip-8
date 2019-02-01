@@ -489,7 +489,7 @@ void ChipEight::load(const std::string &filename)
     {
         uint8_t buffer;
         programFile.read((char*)&buffer, 1);
-        if(programFile.badbit || programFile.failbit)
+        if(programFile.badbit or programFile.failbit)
         {
             //std::cout << "ERROR: reading failed at 0x" << std::hex << memoryPointer << std::dec << std::endl;
             //break;
@@ -497,7 +497,6 @@ void ChipEight::load(const std::string &filename)
         memory[memoryPointer + 0x200] = buffer;
         memoryPointer++;
         //std::cout << int(buffer) << std::hex << std::endl;
-
     }
     programFile.close();
 }
