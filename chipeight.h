@@ -30,9 +30,7 @@ class ChipEight
 
     uint16_t fetchOpcode();
     void processTimers();
-
     void clearScreen();
-
     void returnFromSubroutine();
 
     // firstByte opcodes

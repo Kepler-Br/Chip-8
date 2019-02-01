@@ -220,9 +220,10 @@ void ChipEight::drawSprite(uint16_t opcode)
         {
             if((pixel & (0x80 >> xline)) != 0)
             {
-                if(displayBuffer[(x + xline + ((y + yline) * 64))] == 1)
+                int coordinate = ((x + xline)%64 + ((y + yline)%32 * 64));
+                if(displayBuffer[coordinate] == 1)
                     registers[0xF] = 1;
-                displayBuffer[x + xline + ((y + yline) * 64)] ^= 1;
+                displayBuffer[coordinate] ^= 1;
             }
         }
     }
