@@ -1,5 +1,5 @@
 #include <iostream>
-#include "chipEight.h"
+#include "chipeight.h"
 #include <chrono>
 #include <thread>
 
@@ -48,6 +48,13 @@ int main(int argc, char *argv[])
 {
     ChipEight eight;
     eight.init();
+
+#ifdef QT_QML_DEBUG
+    eight.load("./spaceInvaders.ch8");
+    exec(eight);
+#endif // QT_QML_DEBUG
+
+#ifdef RELEASE
     if(argc == 1)
     {
         std::cout << "No argument provided.\n";
@@ -55,8 +62,7 @@ int main(int argc, char *argv[])
     }
     eight.load(argv[1]);
     exec(eight);
-    //eight.pressKey(1);
-    //debugExe(eight);
+#endif // RELEASE
 
    
     return 0;
