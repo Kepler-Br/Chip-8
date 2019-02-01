@@ -140,6 +140,65 @@ private:
                     break;
                 }
             }
+            else if ( event.type == SDL_KEYUP )
+            {
+                switch ( event.key.keysym.sym )
+                {
+                case SDLK_1:
+                    chipeight.releaseKey(0x1);
+                    break;
+                case SDLK_2:
+                    chipeight.releaseKey(0x2);
+                    break;
+                case SDLK_3:
+                    chipeight.releaseKey(0x3);
+                    break;
+                case SDLK_4:
+                    chipeight.releaseKey(0xC);
+                    break;
+
+                case SDLK_q:
+                    chipeight.releaseKey(0x4);
+                    break;
+                case SDLK_w:
+                    chipeight.releaseKey(0x5);
+                    break;
+                case SDLK_e:
+                    chipeight.releaseKey(0x6);
+                    break;
+                case SDLK_r:
+                    chipeight.releaseKey(0xD);
+                    break;
+
+                case SDLK_a:
+                    chipeight.releaseKey(0x7);
+                    break;
+                case SDLK_s:
+                    chipeight.releaseKey(0x8);
+                    break;
+                case SDLK_d:
+                    chipeight.releaseKey(0x9);
+                    break;
+                case SDLK_f:
+                    chipeight.releaseKey(0xE);
+                    break;
+
+                case SDLK_z:
+                    chipeight.releaseKey(0xA);
+                    break;
+                case SDLK_x:
+                    chipeight.releaseKey(0x0);
+                    break;
+                case SDLK_c:
+                    chipeight.releaseKey(0xB);
+                    break;
+                case SDLK_v:
+                    chipeight.releaseKey(0xF);
+                    break;
+                default :
+                    break;
+                }
+            }
             if (event.type == SDL_WINDOWEVENT) {
                 switch (event.window.event) {
                 case SDL_WINDOWEVENT_RESIZED:
@@ -189,8 +248,11 @@ public:
             if(chipeight.drawFlag)
                 render();
             processEvents();
-            for(int i = 0; i < 1; i++)
+            for(int i = 0; i < 10; i++)
+            {
+                chipeight.printDebug();
                 chipeight.cycle();
+            }
 
             double n_FPScap = 60.0;
 
