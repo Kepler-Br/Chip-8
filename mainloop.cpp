@@ -231,9 +231,9 @@ void MainLoop::run()
         if(chipeight.drawFlag)
             render();
         processEvents();
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 20; i++)
         {
-            chipeight.printDebug();
+//            chipeight.printDebug();
             chipeight.cycle();
         }
 

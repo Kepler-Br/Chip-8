@@ -19,7 +19,7 @@ class ChipEight
     uint8_t delayTimer = 0;
     uint8_t soundTimer = 0;
 
-    uint16_t registers[registerCount];
+    uint8_t registers[registerCount];
     uint16_t registerI = 0;
     uint16_t programCounter = 0;
 
