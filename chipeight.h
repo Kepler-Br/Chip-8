@@ -13,7 +13,7 @@ class ChipEight
     static const int registerCount = 0x10;
     static const int keyCount = 0x10;
 
-    uint8_t memory[memorySize];    
+    uint8_t memory[memorySize];
     uint8_t displayBuffer[displayWidth*displayHeight];
     uint8_t keys[keyCount];
     uint8_t delayTimer = 0;
