@@ -30,6 +30,7 @@ void ChipEight::returnFromSubroutine()
 {
     stackPointer--;
     programCounter = jumpStack[stackPointer];
+    programCounter+=2;
 }
 
 // firstByte opcodes
@@ -261,7 +262,7 @@ void ChipEight::waitForKey(uint16_t opcode)
     bool keyPressed = false;
     for(int i = 0; i < 0x10; i++)
     {
-        if(keys[i] != 1)
+        if(keys[i] == 1)
         {
             keyPressed = true;
             int reg = (opcode & 0x0F00) >> 8;
@@ -425,12 +426,12 @@ void ChipEight::processFirstByteOpcode(uint16_t opcode)
 
 void ChipEight::processLastByteOpcode(uint16_t opcode)
 {
-    switch(opcode & 0x000F)
+    switch(opcode & 0x00FF)
     {
     case 0x00E0:
         clearScreen();
         break;
-    case 0x000E:
+    case 0x00EE:
         returnFromSubroutine();
         break;
     default:
