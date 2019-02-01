@@ -434,7 +434,7 @@ void ChipEight::processLastByteOpcode(uint16_t opcode)
         break;
     default:
         std::cout << "WARNING: unknown last bit opcode: 0x" << std::hex
-                  << opcode << std::dec << std::endl;
+                  << opcode << " at " << programCounter << std::dec << std::endl;
         programCounter += 2;
         break;
     }
