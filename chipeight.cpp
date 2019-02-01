@@ -2,7 +2,7 @@
 
 uint16_t ChipEight::fetchOpcode()
 {
-    uint16_t opcode = memory[programCounter] << 8 | memory[programCounter+1];
+    uint16_t opcode = uint16_t(memory[programCounter] << 8 | memory[programCounter+1]);
     return opcode;
 }
 
@@ -89,7 +89,7 @@ void ChipEight::skipIfTwoRegistersNotEqual(uint16_t opcode)
 void ChipEight::setRegister(uint16_t opcode)
 {
     int registerNum = (opcode & 0x0F00) >> 8;
-    uint16_t registerValue = opcode & 0x00FF;
+    uint8_t registerValue = opcode & 0x00FF;
     registers[registerNum] = registerValue;
     programCounter += 2;
 }
@@ -138,10 +138,12 @@ void ChipEight::sumRegisters(uint16_t opcode)
 {
     int first = (opcode & 0x0F00) >> 8;
     int second = (opcode & 0x00F0) >> 4;
-    registers[first] += registers[second];
+    // Overflow check
     registers[0xF] = 0;
-    if( 0x100 - registers[first] > registers[second])
+    if(registers[first] + registers[second] < registers[first])
         registers[0xF] = 1;
+
+    registers[first] += registers[second];
     programCounter += 2;
 }
 
@@ -149,10 +151,12 @@ void ChipEight::substractRegisters(uint16_t opcode)
 {
     int first = (opcode & 0x0F00) >> 8;
     int second = (opcode & 0x00F0) >> 4;
+    // Underflow check
+    registers[0xF] = 1;
+    if(registers[first] - registers[second] > registers[first])
+        registers[0xF] = 0;
+
     registers[first] -= registers[second];
-    registers[0xF] = 0;
-    if(registers[first] < registers[second])
-        registers[0xF] = 1;
     programCounter += 2;
 }
 
@@ -212,7 +216,7 @@ void ChipEight::bitwiseRandomNumber(uint16_t opcode)
 {
     int reg = (opcode & 0x0F00) >> 8;
     int value = opcode & 0x00FF;
-    registers[reg] = uint16_t(rand()%255)&value;
+    registers[reg] = uint8_t(rand()%255)&value;
     programCounter+=2;
 }
 
@@ -276,7 +280,7 @@ void ChipEight::waitForKey(uint16_t opcode)
         {
             keyPressed = true;
             int reg = (opcode & 0x0F00) >> 8;
-            registers[reg] = i;
+            registers[reg] = uint8_t(i);
         }
     }
     if(keyPressed)

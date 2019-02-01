@@ -198,7 +198,7 @@ MainLoop::MainLoop(int argc, char *argv[])
 {
     initSdl();
     chipeight.init();
-    chipeight.load("./spaceInvaders.ch8");
+    chipeight.load(argv[1]);
     running = false;
 }
 
@@ -237,7 +237,7 @@ void MainLoop::run()
             chipeight.cycle();
         }
 
-        double n_FPScap = 60.0;
+        double n_FPScap = 30.0;
 
         if(1000.0/n_FPScap > SDL_GetTicks()-time)
         {
