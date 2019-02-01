@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 #ifdef QT_QML_DEBUG
 //    eight.load("./spaceInvaders.ch8");
 //    debugExe(eight);
-    MainLoop mainLoop;
+    MainLoop mainLoop(argc, argv);
     mainLoop.run();
 #endif // QT_QML_DEBUG
 
