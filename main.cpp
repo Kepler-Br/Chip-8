@@ -2,6 +2,7 @@
 #include "chipeight.h"
 #include <chrono>
 #include <thread>
+#include <mainloop.h>
 
 void draw(ChipEight &eight)
 {
@@ -30,7 +31,7 @@ void debugExe(ChipEight &eight)
         eight.cycle();
         draw(eight);
         std::string dump;
-        std::cin >> dump;
+        std::cin.get();
     }
 }
 
@@ -50,8 +51,10 @@ int main(int argc, char *argv[])
     eight.init();
 
 #ifdef QT_QML_DEBUG
-    eight.load("./spaceInvaders.ch8");
-    exec(eight);
+//    eight.load("./spaceInvaders.ch8");
+//    debugExe(eight);
+    MainLoop mainLoop;
+    mainLoop.run();
 #endif // QT_QML_DEBUG
 
 #ifdef RELEASE
