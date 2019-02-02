@@ -1,17 +1,15 @@
 # Chip 8 console emulator
-Features:
-* Play *.ch8 files;  
-* No input in console;  
-* ChipEight class can use input though.  
+
+**TODO:**  
+* Change the way timer works.
 
 Project checklist:  
-- [x] 85% bugfree!  
-- [x] Large class containing (oh my~) 550 lines of code!  
+- [x] 95% bugfree!  
 - [x] Poor or absent comments!  
-- [x] How the heck am I supposed to use this!  
 - [x] Not obvious methods names!  
 - [x] "So-so" code style!  
-- [x] And many more!  
+- [x] And many more!   
+- [x] Wow, SDL2!
 
-Compile with `cmake .` and run like this: `chit8emu ./games/game.ch8`.  
+Compile with `qmake .; make -j` and run like this: `chip-8 ./games/game.ch8`.  
 You should provide path to game in first argument.  
