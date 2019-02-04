@@ -4,7 +4,7 @@
 * Change the way timer works.
 
 Project checklist:  
-- [x] 96% bugfree!  
+- [x] 94% bugfree!  
 - [x] Poor or absent comments!  
 - [x] Not obvious methods names!  
 - [x] "So-so" code style!  
