@@ -2,6 +2,7 @@
 
 **TODO:**  
 * Change the way timer works.
+* Do code refactoring!
 
 Project checklist:  
 - [x] 94% bugfree!  
