@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdexcept>
+#include <tuple>
 
 #include "chipeight.h"
 
@@ -17,9 +18,14 @@ private:
     int windowHeight = 480;
     int windowWidth = 640;
 
+    std::tuple<uint8_t, uint8_t, uint8_t> backgroundColor;
+    std::tuple<uint8_t, uint8_t, uint8_t> pixelColor;
+
     void initSdl();
     void render();
     void processEvents();
+
+    void readConfig();
 
 public:
     MainLoop(int argc, char *argv[]);

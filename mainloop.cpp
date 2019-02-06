@@ -1,4 +1,5 @@
 #include "mainloop.h"
+#include <regex>
 
 void MainLoop::initSdl()
 {
@@ -22,7 +23,10 @@ void MainLoop::initSdl()
         throw std::runtime_error(SDL_GetError());
     }
 
-    SDL_SetRenderDrawColor(renderer, 0xCA, 0xDC, 0x9F, 255);
+    SDL_SetRenderDrawColor(renderer, std::get<0>(backgroundColor),
+                                     std::get<1>(backgroundColor),
+                                     std::get<2>(backgroundColor),
+                                     255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
@@ -33,7 +37,10 @@ void MainLoop::render()
     const int CHIP_SCREEN_WIDTH = 64;
     const int CHIP_SCREEN_HEIGHT = 32;
 
-    SDL_SetRenderDrawColor(renderer, 0xCA, 0xDC, 0x9F, 255);
+    SDL_SetRenderDrawColor(renderer, std::get<0>(backgroundColor),
+                                     std::get<1>(backgroundColor),
+                                     std::get<2>(backgroundColor),
+                                     255);
     SDL_RenderClear(renderer);
     for(int y = 0; y < CHIP_SCREEN_HEIGHT; y++)
     {
@@ -48,7 +55,10 @@ void MainLoop::render()
                 r.y = y*height_coef;
                 r.w = width_coef;
                 r.h = height_coef;
-                SDL_SetRenderDrawColor(renderer, 0x30, 0x62, 0x30, 255);
+                SDL_SetRenderDrawColor(renderer, std::get<0>(pixelColor),
+                                                 std::get<1>(pixelColor),
+                                                 std::get<2>(pixelColor),
+                                                 255);
                 SDL_RenderFillRect( renderer, &r );
             }
         }
@@ -194,8 +204,67 @@ void MainLoop::processEvents()
     }
 }
 
-MainLoop::MainLoop(int argc, char *argv[])
+void MainLoop::readConfig()
 {
+    std::ifstream configFile("./config.conf");
+    std::string config;
+    for(std::string line = ""; getline(configFile, line); )
+        config += "\n" + line;
+    configFile.close();
+
+    std::smatch match;
+
+    std::regex backgroundColorRegex(R"(background_color[ ]*=[ ]*\((\d{1,3}),[ ]*(\d{1,3}),[ ]*(\d{1,3})\))");
+    if(std::regex_search(config, match, backgroundColorRegex))
+    {
+        uint8_t r = static_cast<uint8_t>(std::stoi(match.str(1)));
+        uint8_t g = static_cast<uint8_t>(std::stoi(match.str(2)));
+        uint8_t b = static_cast<uint8_t>(std::stoi(match.str(3)));
+        std::cout << "Set background_color to (" << int(r) << ", " << int(g) << ", " << int(b) << ").\n";
+        backgroundColor = std::make_tuple(r, g, b);
+    }
+    else
+    {
+        std::cout << "No background_color property found in config.conf. Set to (0, 0, 0)\n";
+    }
+
+    std::regex pixelColorRegex(R"(pixel_color[ ]*=[ ]*\((\d{1,3}),[ ]*(\d{1,3}),[ ]*(\d{1,3})\))");
+    if(std::regex_search(config, match, pixelColorRegex))
+    {
+        uint8_t r = static_cast<uint8_t>(std::stoi(match.str(1)));
+        uint8_t g = static_cast<uint8_t>(std::stoi(match.str(2)));
+        uint8_t b = static_cast<uint8_t>(std::stoi(match.str(3)));
+        std::cout << "Set pixel_color to (" << int(r) << ", " << int(g) << ", " << int(b) << ").\n";
+        pixelColor = std::make_tuple(r, g, b);
+    }
+    else
+    {
+        std::cout << "No pixel_color property found in config.conf. Set to (255, 255, 255)\n";
+    }
+
+    std::regex windowGeometryRegex(R"(window_geometry[ ]*=[ ]*\((\d{1,3}),[ ]*(\d{1,3}))");
+    if(std::regex_search(config, match, windowGeometryRegex))
+    {
+        const int MINIMUM_WINDOW_SIZE = 25;
+        int w = std::stoi(match.str(1));
+        w = w < MINIMUM_WINDOW_SIZE? MINIMUM_WINDOW_SIZE:w;
+        int h = std::stoi(match.str(2));
+        h = h < MINIMUM_WINDOW_SIZE? MINIMUM_WINDOW_SIZE:h;
+        std::cout << "Set window_geometry to (" << w << ", " << h << ").\n";
+        windowHeight = h;
+        windowWidth = w;
+    }
+    else
+    {
+        std::cout << "No window_geometry property found in config.conf. Set to (800, 600)\n";
+    }
+}
+
+MainLoop::MainLoop(int argc, char *argv[]):
+    backgroundColor(0, 0, 0),
+    pixelColor(255, 255, 255)
+{
+    readConfig();
     initSdl();
     chipeight.init();
     chipeight.load(argv[1]);
@@ -215,9 +284,6 @@ void MainLoop::run()
     Uint32 currentTime = SDL_GetTicks();
     Uint32 lastTime = 0;
     Uint32 time = 0; // Используется для ограничения FPS
-
-
-
 
     running = true;
     while(running)
