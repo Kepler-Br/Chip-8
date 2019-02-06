@@ -207,6 +207,17 @@ void MainLoop::processEvents()
 void MainLoop::readConfig()
 {
     std::ifstream configFile("./config.conf");
+    if(configFile.fail())
+    {
+        configFile.close();
+        std::cout << "Cannot read config.conf. Here is example of config file:\n";
+        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\n";
+        std::cout << "I'll try to create configuration file.\n";
+        std::ofstream confFile("./config.conf");
+        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\n";
+        confFile.close();
+        return;
+    }
     std::string config;
     for(std::string line = ""; getline(configFile, line); )
         config += "\n" + line;
