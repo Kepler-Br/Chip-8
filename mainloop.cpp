@@ -211,10 +211,10 @@ void MainLoop::readConfig()
     {
         configFile.close();
         std::cout << "Cannot read config.conf. Here is example of config file:\n";
-        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\n";
+        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncyclesPerSecond = 20\n";
         std::cout << "I'll try to create configuration file.\n";
         std::ofstream confFile("./config.conf");
-        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\n";
+        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncyclesPerSecond = 20\n";
         confFile.close();
         return;
     }
@@ -269,6 +269,21 @@ void MainLoop::readConfig()
     {
         std::cout << "No window_geometry property found in config.conf. Set to (800, 600)\n";
     }
+
+    std::regex cyclesPerMinuteRegex(R"(cycles_per_second[ ]*=[ ]*(\d+))");
+    if(std::regex_search(config, match, windowGeometryRegex))
+    {
+        const int MINIMUM_CYCLES = 1;
+        int cycles = std::stoi(match.str(1));
+        cyclesPerSecond = cycles < MINIMUM_CYCLES? MINIMUM_CYCLES:cycles;
+        std::cout << "Set cycles_per_second to " << cyclesPerSecond << ".\n";
+    }
+    else
+    {
+        std::cout << "No cycles_per_minute property found in config.conf. Set to 20\n";
+    }
+
+
 }
 
 MainLoop::MainLoop(int argc, char *argv[]):
@@ -310,7 +325,6 @@ void MainLoop::run()
         processEvents();
         for(int i = 0; i < 20; i++)
         {
-//            chipeight.printDebug();
             chipeight.cycle();
         }
 
