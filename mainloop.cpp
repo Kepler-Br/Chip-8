@@ -306,33 +306,27 @@ MainLoop::~MainLoop()
 
 void MainLoop::run()
 {
-    double f_deltaTime = 0;
-    Uint32 currentTime = SDL_GetTicks();
-    Uint32 lastTime = 0;
-    Uint32 time = 0; // Используется для ограничения FPS
+    const double MS_PER_UPDATE = 1000/cyclesPerSecond;
+    double previous = SDL_GetTicks();
+    double lag = 0.0;
 
     running = true;
     while(running)
     {
-        if (currentTime > lastTime)
-            lastTime = currentTime;
-        currentTime = SDL_GetTicks();
-        f_deltaTime = (double)((currentTime - lastTime)/1000.0f);
-        time = SDL_GetTicks();
+        double current = SDL_GetTicks();
+        double elapsed = current - previous;
+        previous = current;
+        lag += elapsed;
+
+        processEvents();
+
+        while (lag >= MS_PER_UPDATE)
+        {
+            chipeight.cycle();
+            lag -= MS_PER_UPDATE;
+        }
 
         if(chipeight.drawFlag)
             render();
-        processEvents();
-        for(int i = 0; i < 20; i++)
-        {
-            chipeight.cycle();
-        }
-
-        double n_FPScap = 30.0;
-
-        if(1000.0/n_FPScap > SDL_GetTicks()-time)
-        {
-            SDL_Delay(1000.0/n_FPScap-(double)(SDL_GetTicks()-time));
-        }
     }
 }
