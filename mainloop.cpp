@@ -211,7 +211,7 @@ void MainLoop::readConfig()
     {
         configFile.close();
         std::cout << "Cannot read config.conf. Here is example of config file:\n";
-        std::string defaultConfig = "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 600\n";
+        std::string defaultConfig = "background_color = (0, 0, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 600\ngameloops_per_second = 30\n";
         std::cout << defaultConfig;
         std::cout << "I'll try to create configuration file.\n";
         std::ofstream confFile("./config.conf");
@@ -237,7 +237,10 @@ void MainLoop::readConfig()
     }
     else
     {
-        std::cout << "No background_color property found in config.conf. Set to (0, 0, 0)\n";
+        std::cout << "No background_color property found in config.conf. Set to ("<<
+                     std::get<0>(backgroundColor) << ", " <<
+                     std::get<1>(backgroundColor) <<", "<<
+                     std::get<2>(backgroundColor) << ")\n";
     }
 
     std::regex pixelColorRegex(R"(pixel_color[ ]*=[ ]*\((\d{1,3}),[ ]*(\d{1,3}),[ ]*(\d{1,3})\))");
@@ -251,7 +254,10 @@ void MainLoop::readConfig()
     }
     else
     {
-        std::cout << "No pixel_color property found in config.conf. Set to (255, 255, 255)\n";
+        std::cout << "No pixel_color property found in config.conf. Set to ("<<
+                     std::get<0>(pixelColor) << ", " <<
+                     std::get<1>(pixelColor) <<", "<<
+                     std::get<2>(pixelColor) << ")\n";
     }
 
     std::regex windowGeometryRegex(R"(window_geometry[ ]*=[ ]*\((\d{1,3}),[ ]*(\d{1,3}))");
@@ -263,12 +269,12 @@ void MainLoop::readConfig()
         int h = std::stoi(match.str(2));
         h = h < MINIMUM_WINDOW_SIZE? MINIMUM_WINDOW_SIZE:h;
         std::cout << "Set window_geometry to (" << w << ", " << h << ").\n";
-        windowHeight = h;
         windowWidth = w;
+        windowHeight = h;
     }
     else
     {
-        std::cout << "No window_geometry property found in config.conf. Set to (800, 600)\n";
+        std::cout << "No window_geometry property found in config.conf. Set to (" << windowWidth << ", "<< windowHeight <<")\n";
     }
 
     std::regex cyclesPerMinuteRegex(R"(cycles_per_second[ ]*=[ ]*(\d+))");
@@ -281,7 +287,20 @@ void MainLoop::readConfig()
     }
     else
     {
-        std::cout << "No cycles_per_minute property found in config.conf. Set to 20\n";
+        std::cout << "No cycles_per_minute property found in config.conf. Set to " << cyclesPerSecond << "\n";
+    }
+
+    std::regex GameloopsPerSecondRegex(R"(gameloops_per_second[ ]*=[ ]*(\d+))");
+    if(std::regex_search(config, match, GameloopsPerSecondRegex))
+    {
+        const int MINIMUM_CYCLES = 1;
+        int cycles = std::stoi(match.str(1));
+        cyclesPerLoop = cycles < MINIMUM_CYCLES? MINIMUM_CYCLES:cycles;
+        std::cout << "Set cycles_per_second to " << cyclesPerLoop << ".\n";
+    }
+    else
+    {
+        std::cout << "No gameloops_per_second property found in config.conf. Set to " << cyclesPerLoop << "\n";
     }
 
 
