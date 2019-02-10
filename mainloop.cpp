@@ -211,7 +211,14 @@ void MainLoop::readConfig()
     {
         configFile.close();
         std::cout << "Cannot read config.conf. Here is example of config file:\n";
-        std::string defaultConfig = "background_color = (0, 0, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 600\ngameloops_per_second = 30\n";
+        std::string defaultConfig = "background_color = (0, 0, 0)\n"
+                                    "pixel_color = (255, 255, 255)\n"
+                                    "# Window width and height.\n"
+                                    "window_geometry = (800, 600)\n"
+                                    "# How many cycles Chip-8 would calculate per second. Basically this is Hz.\n"
+                                    "cycles_per_second = 600\n"
+                                    "# How many loops would be performed in one second. Basically this is FPS.\n"
+                                    "gameloops_per_second = 30\n";
         std::cout << defaultConfig;
         std::cout << "I'll try to create configuration file.\n";
         std::ofstream confFile("./config.conf");
