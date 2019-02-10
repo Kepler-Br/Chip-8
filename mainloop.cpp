@@ -302,12 +302,12 @@ void MainLoop::readConfig()
     {
         const int MINIMUM_CYCLES = 1;
         int cycles = std::stoi(match.str(1));
-        cyclesPerLoop = cycles < MINIMUM_CYCLES? MINIMUM_CYCLES:cycles;
-        std::cout << "Set cycles_per_second to " << cyclesPerLoop << ".\n";
+        loopsPerSecond = cycles < MINIMUM_CYCLES? MINIMUM_CYCLES:cycles;
+        std::cout << "Set cycles_per_second to " << loopsPerSecond << ".\n";
     }
     else
     {
-        std::cout << "No gameloops_per_second property found in config.conf. Set to " << cyclesPerLoop << "\n";
+        std::cout << "No gameloops_per_second property found in config.conf. Set to " << loopsPerSecond << "\n";
     }
 
 
@@ -356,10 +356,10 @@ void MainLoop::run()
         if(chipeight.drawFlag)
             render();
 
-        double n_FPScap = 30.0;
-        if(1000.0/n_FPScap > SDL_GetTicks()-current)
+        // Capping. Will not exceed cyclesPerLoop in one second.
+        if(1000.0/loopsPerSecond > SDL_GetTicks()-current)
         {
-            SDL_Delay(static_cast<Uint32>(1000.0/n_FPScap-(SDL_GetTicks()-current)));
+            SDL_Delay(static_cast<Uint32>(1000.0/loopsPerSecond-(SDL_GetTicks()-current)));
         }
     }
 }

@@ -21,7 +21,7 @@ private:
     int cyclesPerSecond = 600;
     // How many cycles would app perform per second.
     //Basically - FPS
-    int cyclesPerLoop = 30;
+    int loopsPerSecond = 30;
     std::tuple<uint8_t, uint8_t, uint8_t> backgroundColor;
     std::tuple<uint8_t, uint8_t, uint8_t> pixelColor;
 
