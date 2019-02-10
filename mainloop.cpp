@@ -271,7 +271,7 @@ void MainLoop::readConfig()
     }
 
     std::regex cyclesPerMinuteRegex(R"(cycles_per_second[ ]*=[ ]*(\d+))");
-    if(std::regex_search(config, match, windowGeometryRegex))
+    if(std::regex_search(config, match, cyclesPerMinuteRegex))
     {
         const int MINIMUM_CYCLES = 1;
         int cycles = std::stoi(match.str(1));
@@ -306,7 +306,7 @@ MainLoop::~MainLoop()
 
 void MainLoop::run()
 {
-    const double MS_PER_UPDATE = 1000/cyclesPerSecond;
+    const double MS_PER_UPDATE = 1000.0/cyclesPerSecond;
     double previous = SDL_GetTicks();
     double lag = 0.0;
 
@@ -322,6 +322,7 @@ void MainLoop::run()
 
         while (lag >= MS_PER_UPDATE)
         {
+//            std::cout << "Cycle!\n";
             chipeight.cycle();
             lag -= MS_PER_UPDATE;
         }
