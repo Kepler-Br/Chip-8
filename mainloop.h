@@ -19,7 +19,9 @@ private:
     int windowWidth = 640;
     // Hz for Chip-8. How many cycles per second would be calculated.
     int cyclesPerSecond = 600;
-    int cyclesPerLoop = 60;
+    // How many cycles would app perform per second.
+    //Basically - FPS
+    int cyclesPerLoop = 30;
     std::tuple<uint8_t, uint8_t, uint8_t> backgroundColor;
     std::tuple<uint8_t, uint8_t, uint8_t> pixelColor;
 
