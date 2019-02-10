@@ -24,9 +24,9 @@ void MainLoop::initSdl()
     }
 
     SDL_SetRenderDrawColor(renderer, std::get<0>(backgroundColor),
-                                     std::get<1>(backgroundColor),
-                                     std::get<2>(backgroundColor),
-                                     255);
+                           std::get<1>(backgroundColor),
+                           std::get<2>(backgroundColor),
+                           255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
@@ -38,9 +38,9 @@ void MainLoop::render()
     const int CHIP_SCREEN_HEIGHT = 32;
 
     SDL_SetRenderDrawColor(renderer, std::get<0>(backgroundColor),
-                                     std::get<1>(backgroundColor),
-                                     std::get<2>(backgroundColor),
-                                     255);
+                           std::get<1>(backgroundColor),
+                           std::get<2>(backgroundColor),
+                           255);
     SDL_RenderClear(renderer);
     for(int y = 0; y < CHIP_SCREEN_HEIGHT; y++)
     {
@@ -56,9 +56,9 @@ void MainLoop::render()
                 r.w = width_coef;
                 r.h = height_coef;
                 SDL_SetRenderDrawColor(renderer, std::get<0>(pixelColor),
-                                                 std::get<1>(pixelColor),
-                                                 std::get<2>(pixelColor),
-                                                 255);
+                                       std::get<1>(pixelColor),
+                                       std::get<2>(pixelColor),
+                                       255);
                 SDL_RenderFillRect( renderer, &r );
             }
         }
@@ -211,10 +211,11 @@ void MainLoop::readConfig()
     {
         configFile.close();
         std::cout << "Cannot read config.conf. Here is example of config file:\n";
-        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 20\n";
+        std::string defaultConfig = "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 600\n";
+        std::cout << defaultConfig;
         std::cout << "I'll try to create configuration file.\n";
         std::ofstream confFile("./config.conf");
-        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 20\n";
+        confFile << defaultConfig;
         confFile.close();
         return;
     }
@@ -328,5 +329,11 @@ void MainLoop::run()
 
         if(chipeight.drawFlag)
             render();
+
+        double n_FPScap = 30.0;
+        if(1000.0/n_FPScap > SDL_GetTicks()-current)
+        {
+            SDL_Delay(static_cast<Uint32>(1000.0/n_FPScap-(SDL_GetTicks()-current)));
+        }
     }
 }
