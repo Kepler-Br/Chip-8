@@ -211,10 +211,10 @@ void MainLoop::readConfig()
     {
         configFile.close();
         std::cout << "Cannot read config.conf. Here is example of config file:\n";
-        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncyclesPerSecond = 20\n";
+        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 20\n";
         std::cout << "I'll try to create configuration file.\n";
         std::ofstream confFile("./config.conf");
-        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncyclesPerSecond = 20\n";
+        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 20\n";
         confFile.close();
         return;
     }
@@ -322,7 +322,6 @@ void MainLoop::run()
 
         while (lag >= MS_PER_UPDATE)
         {
-//            std::cout << "Cycle!\n";
             chipeight.cycle();
             lag -= MS_PER_UPDATE;
         }
