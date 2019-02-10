@@ -17,7 +17,6 @@ private:
     ChipEight chipeight;
     int windowHeight = 480;
     int windowWidth = 640;
-
     std::tuple<uint8_t, uint8_t, uint8_t> backgroundColor;
     std::tuple<uint8_t, uint8_t, uint8_t> pixelColor;
 
