@@ -17,6 +17,9 @@ private:
     ChipEight chipeight;
     int windowHeight = 480;
     int windowWidth = 640;
+    // Hz for Chip-8. How many cycles per second would be calculated.
+    int cyclesPerSecond = 600;
+    int cyclesPerLoop = 60;
     std::tuple<uint8_t, uint8_t, uint8_t> backgroundColor;
     std::tuple<uint8_t, uint8_t, uint8_t> pixelColor;
 
