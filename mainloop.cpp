@@ -24,9 +24,9 @@ void MainLoop::initSdl()
     }
 
     SDL_SetRenderDrawColor(renderer, std::get<0>(backgroundColor),
-                                     std::get<1>(backgroundColor),
-                                     std::get<2>(backgroundColor),
-                                     255);
+                           std::get<1>(backgroundColor),
+                           std::get<2>(backgroundColor),
+                           255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
@@ -38,9 +38,9 @@ void MainLoop::render()
     const int CHIP_SCREEN_HEIGHT = 32;
 
     SDL_SetRenderDrawColor(renderer, std::get<0>(backgroundColor),
-                                     std::get<1>(backgroundColor),
-                                     std::get<2>(backgroundColor),
-                                     255);
+                           std::get<1>(backgroundColor),
+                           std::get<2>(backgroundColor),
+                           255);
     SDL_RenderClear(renderer);
     for(int y = 0; y < CHIP_SCREEN_HEIGHT; y++)
     {
@@ -56,9 +56,9 @@ void MainLoop::render()
                 r.w = width_coef;
                 r.h = height_coef;
                 SDL_SetRenderDrawColor(renderer, std::get<0>(pixelColor),
-                                                 std::get<1>(pixelColor),
-                                                 std::get<2>(pixelColor),
-                                                 255);
+                                       std::get<1>(pixelColor),
+                                       std::get<2>(pixelColor),
+                                       255);
                 SDL_RenderFillRect( renderer, &r );
             }
         }
@@ -211,10 +211,11 @@ void MainLoop::readConfig()
     {
         configFile.close();
         std::cout << "Cannot read config.conf. Here is example of config file:\n";
-        std::cout << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncyclesPerSecond = 20\n";
+        std::string defaultConfig = "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncycles_per_second = 600\n";
+        std::cout << defaultConfig;
         std::cout << "I'll try to create configuration file.\n";
         std::ofstream confFile("./config.conf");
-        confFile << "background_color = (0, 255, 0)\npixel_color = (255, 255, 255)\nwindow_geometry = (800, 600)\ncyclesPerSecond = 20\n";
+        confFile << defaultConfig;
         confFile.close();
         return;
     }
@@ -271,7 +272,7 @@ void MainLoop::readConfig()
     }
 
     std::regex cyclesPerMinuteRegex(R"(cycles_per_second[ ]*=[ ]*(\d+))");
-    if(std::regex_search(config, match, windowGeometryRegex))
+    if(std::regex_search(config, match, cyclesPerMinuteRegex))
     {
         const int MINIMUM_CYCLES = 1;
         int cycles = std::stoi(match.str(1));
@@ -306,33 +307,33 @@ MainLoop::~MainLoop()
 
 void MainLoop::run()
 {
-    double f_deltaTime = 0;
-    Uint32 currentTime = SDL_GetTicks();
-    Uint32 lastTime = 0;
-    Uint32 time = 0; // Используется для ограничения FPS
+    const double MS_PER_UPDATE = 1000.0/cyclesPerSecond;
+    double previous = SDL_GetTicks();
+    double lag = 0.0;
 
     running = true;
     while(running)
     {
-        if (currentTime > lastTime)
-            lastTime = currentTime;
-        currentTime = SDL_GetTicks();
-        f_deltaTime = (double)((currentTime - lastTime)/1000.0f);
-        time = SDL_GetTicks();
+        double current = SDL_GetTicks();
+        double elapsed = current - previous;
+        previous = current;
+        lag += elapsed;
+
+        processEvents();
+
+        while (lag >= MS_PER_UPDATE)
+        {
+            chipeight.cycle();
+            lag -= MS_PER_UPDATE;
+        }
 
         if(chipeight.drawFlag)
             render();
-        processEvents();
-        for(int i = 0; i < 20; i++)
-        {
-            chipeight.cycle();
-        }
 
         double n_FPScap = 30.0;
-
-        if(1000.0/n_FPScap > SDL_GetTicks()-time)
+        if(1000.0/n_FPScap > SDL_GetTicks()-current)
         {
-            SDL_Delay(1000.0/n_FPScap-(double)(SDL_GetTicks()-time));
+            SDL_Delay(static_cast<Uint32>(1000.0/n_FPScap-(SDL_GetTicks()-current)));
         }
     }
 }
