@@ -3,7 +3,7 @@
 
 void MainLoop::initSdl()
 {
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     window = SDL_CreateWindow(
                 "Chip 8 emulator.",
                 SDL_WINDOWPOS_UNDEFINED,
@@ -319,6 +319,7 @@ MainLoop::MainLoop(int argc, char *argv[]):
 {
     readConfig();
     initSdl();
+    audio.init();
     chipeight.init();
     chipeight.load(argv[1]);
     running = false;
@@ -355,6 +356,12 @@ void MainLoop::run()
 
         if(chipeight.drawFlag)
             render();
+        if(chipeight.soundFlag)
+        {
+            chipeight.soundFlag = false;
+            audio.play();
+
+        }
 
         // Capping. Will not exceed cyclesPerLoop in one second.
         if(1000.0/loopsPerSecond > SDL_GetTicks()-current)
