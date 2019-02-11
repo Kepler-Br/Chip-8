@@ -70,6 +70,7 @@ class ChipEight
     
     public:
     bool drawFlag = false;
+    bool soundFlag = false;
 
     ChipEight() = default;
 

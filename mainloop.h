@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "chipeight.h"
+#include "audio.h"
 
 class MainLoop
 {
@@ -15,6 +16,7 @@ private:
     SDL_Renderer* renderer;
 
     ChipEight chipeight;
+    Audio audio;
     int windowHeight = 480;
     int windowWidth = 640;
     // Hz for Chip-8. How many cycles per second would be calculated.

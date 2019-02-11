@@ -13,7 +13,8 @@ void ChipEight::processTimers()
     if(soundTimer > 0)
     {
         if(soundTimer == 1)
-            std::cout << "beep\n";
+            soundFlag = true;
+//            std::cout << "beep\n";
         soundTimer--;
     }
 }
