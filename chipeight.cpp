@@ -14,7 +14,6 @@ void ChipEight::processTimers()
     {
         if(soundTimer == 1)
             soundFlag = true;
-//            std::cout << "beep\n";
         soundTimer--;
     }
 }
@@ -166,12 +165,6 @@ void ChipEight::shiftRightRegister(uint16_t opcode)
     int regToShift = opcode & 0x0F00;
     registers[0xF] = registers[regToShift] & 0x1;
     registers[regToShift] >>= 1;
-//    registers[0xF] = registers[(opcode & 0x0F00) >> 8] & 0x1;
-//    registers[(opcode & 0x0F00) >> 8] >>= 1;
-    /*int first = (opcode & 0x0F00) >> 8;
-        int second = (opcode & 0x00F0) >> 4;
-        registers[0xF] = registers[second] & 0x0001;
-        registers[first] = registers[second] >> 1;*/
     programCounter += 2;
 }
 
@@ -191,13 +184,6 @@ void ChipEight::shiftLeftRegister(uint16_t opcode)
     int regToShift = opcode & 0x0F00;
     registers[0xF] = registers[regToShift] >> 7;
     registers[regToShift] <<= 1;
-//    registers[0xF] = registers[(opcode & 0x0F00) >> 8] >> 7;
-//    registers[(opcode & 0x0F00) >> 8] <<= 1;
-
-    /*int first = (opcode & 0x0F00) >> 8;
-        int second = (opcode & 0x00F0) >> 4;
-        registers[0xF] = registers[second] & 0x8000;
-        registers[first] = registers[second] >> 1;*/
     programCounter += 2;
 }
 
@@ -305,11 +291,11 @@ void ChipEight::setSoundTimer(uint16_t opcode)
 void ChipEight::addToI(uint16_t opcode)
 {
     int reg = (opcode & 0x0F00) >> 8;
-    // If overflow.
-//    if(registerI + registers[reg] < registerI)
-//        registers[0xf] = 1;
-//    else
-//        registers[0xf] = 0;
+    // If overflow. Undocumented feature.
+    if(registerI + registers[reg] < registerI)
+        registers[0xf] = 1;
+    else
+        registers[0xf] = 0;
     registerI += registers[reg];
     programCounter += 2;
 }
@@ -335,7 +321,6 @@ void ChipEight::registerDump(uint16_t opcode)
     int endReg = (opcode & 0x0F00) >> 8;
     for(int i = 0; i <= endReg; i++)
         memory[registerI + i] = registers[i];
-//    registerI += reg + 1;
     programCounter += 2;
 }
 
@@ -344,7 +329,6 @@ void ChipEight::loadRegister(uint16_t opcode)
     int endReg = (opcode & 0x0F00) >> 8;
     for(int i = 0; i <= endReg; i++)
         registers[i] = memory[registerI + i];
-//    registerI += endReg + 1;
     programCounter += 2;
 }
 
@@ -374,24 +358,38 @@ void ChipEight::processFirstByteOpcode(uint16_t opcode)
         addToRegister(opcode);
         break;
     case 0x8000:
-        if((opcode & 0x000F) == 0x0)
+        switch ((opcode & 0x000F))
+        {
+        case 0x0:
             setRegisterAnotherRegister(opcode);
-        if((opcode & 0x000F) == 0x1)
+            break;
+        case 0x1:
             registerBitwiseOr(opcode);
-        if((opcode & 0x000F) == 0x2)
+            break;
+        case 0x2:
             registerBitwiseAnd(opcode);
-        if((opcode & 0x000F) == 0x3)
+            break;
+        case 0x3:
             registerBitwiseXor(opcode);
-        if((opcode & 0x000F) == 0x4)
+            break;
+        case 0x4:
             sumRegisters(opcode);
-        if((opcode & 0x000F) == 0x5)
+            break;
+        case 0x5:
             substractRegisters(opcode);
-        if((opcode & 0x000F) == 0x6)
+            break;
+        case 0x6:
             shiftRightRegister(opcode);
-        if((opcode & 0x000F) == 0x7)
-            VySubstractVx(opcode);
-        if((opcode & 0x000F) == 0xE) //The fuck?
+            break;
+        case 0x7:
+            VySubstractVx(opcode); break;
+        case 0xE:
             shiftLeftRegister(opcode);
+            break;
+        default:
+            std::cout << "Oh, noes! Unknown 0x8XXX opcode!" << std::hex << opcode << std::dec << std::endl;
+            break;
+        }
         break;
     case 0x9000:
         skipIfTwoRegistersNotEqual(opcode);
@@ -409,30 +407,53 @@ void ChipEight::processFirstByteOpcode(uint16_t opcode)
         drawSprite(opcode);
         break;
     case 0xE000:
-        if((opcode & 0x00FF) == 0x9E)
+        switch (opcode & 0x00FF)
+        {
+        case 0x9E:
             skipIfKeyPressed(opcode);
-        if((opcode & 0x00FF) == 0xA1)
+            break;
+        case 0xA1:
             skipIfKeyNotPressed(opcode);
+            break;
+        default:
+            std::cout << "Oh, noes! Unknown 0xEXXX opcode!" << std::hex << opcode << std::dec << std::endl;
+            break;
+        }
         break;
     case 0xF000:
-        if((opcode & 0x00FF) == 0x07)
+        switch(opcode & 0x00FF)
+        {
+        case 0x07:
             getDelay(opcode);
-        if((opcode & 0x00FF) == 0x0A)
+            break;
+        case 0x0A:
             waitForKey(opcode);
-        if((opcode & 0x00FF) == 0x15)
+            break;
+        case 0x15:
             setDelay(opcode);
-        if((opcode & 0x00FF) == 0x18)
+            break;
+        case 0x18:
             setSoundTimer(opcode);
-        if((opcode & 0x00FF) == 0x1E)
+            break;
+        case 0x1E:
             addToI(opcode);
-        if((opcode & 0x00FF) == 0x29)
+            break;
+        case 0x29:
             getChar(opcode);
-        if((opcode & 0x00FF) == 0x33)
+            break;
+        case 0x33:
             storeRegister(opcode);
-        if((opcode & 0x00FF) == 0x55)
+            break;
+        case 0x55:
             registerDump(opcode);
-        if((opcode & 0x00FF) == 0x65)
+            break;
+        case 0x65:
             loadRegister(opcode);
+            break;
+        default:
+            std::cout << "Oh, noes! Unknown 0xFXXX opcode!" << std::hex << opcode << std::dec << std::endl;
+            break;
+        }
         break;
     default:
         programCounter += 2;
@@ -506,7 +527,7 @@ void ChipEight::load(const std::string &filename)
     while(!programFile.eof())
     {
         uint8_t buffer;
-        programFile.read((char*)&buffer, 1);
+        programFile.read(reinterpret_cast<char*>(&buffer), 1);
         if(programFile.badbit or programFile.failbit)
         {
             //std::cout << "ERROR: reading failed at 0x" << std::hex << memoryPointer << std::dec << std::endl;
